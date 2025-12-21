@@ -1,0 +1,31 @@
+services:
+  tf-lab:
+    build:
+      context: ..          # Tells Docker the project files are one folder UP
+      dockerfile: dockerfiles/Dockerfile # The dockerfile is right here in this folder
+    image: rtx-5060
+    container_name: rtx-5060_dev
+
+    # This enables GPU access (equivalent to --gpus all)
+    gpus: all
+
+    ipc: host
+    ulimits:
+      memlock: -1
+      stack: 67108864
+      
+    ports:
+      - "8888:8888"
+
+    volumes:
+      - ..:/workspace     # Maps the parent folder (python3-workspace) to /workspace
+      - jupyter-settings:/root/.jupyter
+
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+
+    command: jupyter lab --ip 0.0.0.0 --allow-root --no-browser --log-level=INFO --ServerApp.token='rtx-5060_dev'
+
+volumes:
+  jupyter-settings:
